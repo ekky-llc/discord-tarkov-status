@@ -10,6 +10,7 @@ const cron = require("node-cron");
 const fs = require("fs");
 const { getItemPrice } = require("./tarkov/getItemPrice");
 const { realTimeToTarkovTime } = require("./tarkov/getTime");
+const { getGoonLocation } = require("./tarkov/getGoonLocation");
 
 // Create a new client instance
 const discord = new Client({
@@ -35,20 +36,29 @@ discord.once(Events.ClientReady, async (client) => {
         console.log(`INFORMATION --- ${(new Date()).toUTCString()} --- Updating Bitcoin Price`);
 
         const data = await getItemPrice('physical_bitcoin_(btc)');
+        
         client.channels.cache.get("1212254689635074078").setName(`🪙 ${data.traderPrice}`);
       });
 
       // Update Tarkov Time; Every 9 Minutes
       cron.schedule("*/9 * * * *", async () => {
         console.log(`INFORMATION --- ${(new Date()).toUTCString()} --- Updating Tarkov Time`);
-
+        
         const now = new Date();
         const l_time = realTimeToTarkovTime(now, true).toUTCString().split(' ')[4].split(':')[0];
         const r_time = realTimeToTarkovTime(now, false).toUTCString().split(' ')[4].split(':')[0];
-    
+        
         client.channels.cache.get("1212282109994074193").setName(`⌚ ${l_time}:00:00+`);
         client.channels.cache.get("1212282171050434590").setName(`⌚ ${r_time}:00:00+`);
       });
+      
+      cron.schedule("0,30 * * * *", async ()=> {
+        console.log(`INFORMATION --- ${(new Date()).toUTCString()} --- Updating Goons Location`);
+
+        const location = await getGoonLocation();
+
+        client.channels.cache.get("1212692015360385085").setName(`☠ Goons @ ${location}`);
+      })
 
 });
 
