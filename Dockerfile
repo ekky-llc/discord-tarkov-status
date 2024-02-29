@@ -18,6 +18,7 @@ RUN npm init -y && npm i puppeteer
 COPY package*.json ./
 RUN npm install puppeteer --unsafe-perm=true --allow-root
 RUN npm install
+COPY .env .
 COPY . .
 
-CMD ["google-chrome-stable", "&&", "npm", "run", "start"]
+CMD ["npm", "run", "start"]
