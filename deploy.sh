@@ -15,7 +15,6 @@ ssh $user@$host << EOF
 
   # Cleanup if exists
   docker container rm -f tarkovstats
-  docker image rm -f buildkite/puppeteer:latest
   docker image rm -f ytb/tarkovstats:latest
 
   # Build, Remove and Deploy Container
@@ -23,18 +22,16 @@ ssh $user@$host << EOF
     
   docker run \
     --name tarkovstats \
-    -v ~/DATA/ytb-bot/data:/usr/src/app/data/ \
-    -v ~/DATA/ytb-bot/tmp:/usr/src/app/tmp/ \
     -dit \
-    -p 5050:5050 \
     --restart=unless-stopped \
     ytb/tarkovstats:latest
 
   # Cleanup Files
+  ls -l
   rm -rf ~/auto-deploy/*
 
   # Check Docker
-  docker ps | grep nood
+  docker ps | grep tarkovstats
 
   # Disconnect
   exit

@@ -1,4 +1,4 @@
-FROM node:lts-slim
+FROM node:18.12.1-slim
 
 ENV TZ Australia/Sydney
 RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ /etc/timezone

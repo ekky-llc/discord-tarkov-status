@@ -3,8 +3,6 @@ require("dotenv").config();
 const {
   Client,
   Events,
-  EmbedBuilder,
-  GatewayIntentBits,
 } = require("discord.js");
 
 const axios = require("axios");
@@ -28,25 +26,25 @@ const discord = new Client({
 });
 
 // Log in to Discord with your client's token
-discord.login(process.env.bot_token);
+discord.login(process.env.discord_token);
 
 discord.once(Events.ClientReady, async (client) => {
 
-      cron.schedule("0 * * * *", async () => {
+     // Update Bitcoin Price; Every 12 Hours
+      cron.schedule("0 0,12 * * *", async () => {
         console.log(`INFORMATION --- ${(new Date()).toUTCString()} --- Updating Bitcoin Price`);
 
-        // Update Bitcoin Price
         const data = await getItemPrice('physical_bitcoin_(btc)');
         client.channels.cache.get("1212254689635074078").setName(`🪙 ${data.traderPrice}`);
       });
 
+      // Update Tarkov Time; Every 9 Minutes
       cron.schedule("*/9 * * * *", async () => {
         console.log(`INFORMATION --- ${(new Date()).toUTCString()} --- Updating Tarkov Time`);
 
-        // Update Times
         const now = new Date();
-        const l_time = await realTimeToTarkovTime(now, true).toUTCString().split(' ')[4].split(':')[0];
-        const r_time = await realTimeToTarkovTime(now, false).toUTCString().split(' ')[4].split(':')[0];
+        const l_time = realTimeToTarkovTime(now, true).toUTCString().split(' ')[4].split(':')[0];
+        const r_time = realTimeToTarkovTime(now, false).toUTCString().split(' ')[4].split(':')[0];
     
         client.channels.cache.get("1212282109994074193").setName(`⌚ ${l_time}:00:00+`);
         client.channels.cache.get("1212282171050434590").setName(`⌚ ${r_time}:00:00+`);
