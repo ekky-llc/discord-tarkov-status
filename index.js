@@ -41,6 +41,7 @@ discord.once(Events.ClientReady, async (client) => {
         const data = await getItemPrice('physical_bitcoin_(btc)');
         
         if (globals.bitcoin_price !== data.traderPrice) {
+          globals.bitcoin_price = data.traderPrice;
           console.log(`INFORMATION --- ${(new Date()).toUTCString()} --- Updating Bitcoin Price from '${globals.bitcoin_price}' to '${data.traderPrice}'`);
           client.channels.cache.get("1212254689635074078").setName(`🪙 ${data.traderPrice}`);
         }else {
@@ -65,6 +66,7 @@ discord.once(Events.ClientReady, async (client) => {
         
         const location = await getGoonLocation();
         if (globals.goon_location !== location) {
+          globals.goon_location = location;
           console.log(`INFORMATION --- ${(new Date()).toUTCString()} --- Updating Goons Location from '${globals.goon_location}' to '${location}'.`);
           client.channels.cache.get("1212692015360385085").setName(`☠ Goons @ ${location}`);
         } else {
@@ -87,13 +89,14 @@ discord.on("ready", async (client) => {
         
       const location = await getGoonLocation();
       if (globals.goon_location !== location) {
+        globals.goon_location = location;
         console.log(`INFORMATION --- ${(new Date()).toUTCString()} --- Updating Goons Location from '${globals.goon_location}' to '${location}'.`);
         client.channels.cache.get("1212692015360385085").setName(`☠ Goons @ ${location}`);
       } else {
         console.log(`INFORMATION --- ${(new Date()).toUTCString()} --- Goons have not moved, no update required.`);
       }
 
-      client.channels.cache.get(message.channelId).send(`@${message.author.displayName} The goons are at ${location} according to 'GoonHunter.com`);
+      client.channels.cache.get(message.channelId).send(`<@${user}> The goons are at **${location}** according to 'https://goonhunter.com'.`);
     }
   });
 });

@@ -14,7 +14,7 @@ async function getGoonLocation() {
         
         let cells = Array.from(document.querySelectorAll('td.s0'));
         
-        location = cells[3].innerText;
+        let location = cells[3].innerText;
 
         return location
     })
