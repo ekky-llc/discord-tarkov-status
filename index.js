@@ -81,5 +81,19 @@ discord.on("ready", async (client) => {
     const [command, ...rest] = message.content.split(" ");
     const text = rest.join(" ");
     const user = message.author.id;
+
+    if (command === "!goons") {
+      console.log(`INFORMATION --- ${(new Date()).toUTCString()} --- Updating Goons Location`);
+        
+      const location = await getGoonLocation();
+      if (globals.goon_location !== location) {
+        console.log(`INFORMATION --- ${(new Date()).toUTCString()} --- Updating Goons Location from '${globals.goon_location}' to '${location}'.`);
+        client.channels.cache.get("1212692015360385085").setName(`☠ Goons @ ${location}`);
+      } else {
+        console.log(`INFORMATION --- ${(new Date()).toUTCString()} --- Goons have not moved, no update required.`);
+      }
+
+      client.channels.cache.get(message.channelId).send(`@${message.author.displayName} The goons are at ${location} according to 'GoonHunter.com`);
+    }
   });
 });
