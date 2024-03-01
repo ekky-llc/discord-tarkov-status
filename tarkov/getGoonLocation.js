@@ -15,7 +15,6 @@ async function getGoonLocation() {
         let cells = Array.from(document.querySelectorAll('td.s0'));
         
         location = cells[3].innerText;
-        traderPrice = getAllPrices.filter( d => d.innerText.includes('Sell to trader'))[0].innerText.split('\n')[2];
 
         return location
     })

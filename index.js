@@ -5,9 +5,7 @@ const {
   Events,
 } = require("discord.js");
 
-const axios = require("axios");
 const cron = require("node-cron");
-const fs = require("fs");
 const { getItemPrice } = require("./tarkov/getItemPrice");
 const { realTimeToTarkovTime } = require("./tarkov/getTime");
 const { getGoonLocation } = require("./tarkov/getGoonLocation");
@@ -26,6 +24,11 @@ const discord = new Client({
   ],
 });
 
+const globals = {
+  bitcoin_price: '',
+  goon_location: '',
+};
+
 // Log in to Discord with your client's token
 discord.login(process.env.discord_token);
 
@@ -34,14 +37,19 @@ discord.once(Events.ClientReady, async (client) => {
      // Update Bitcoin Price; Every 12 Hours
       cron.schedule("0 0,12 * * *", async () => {
         console.log(`INFORMATION --- ${(new Date()).toUTCString()} --- Updating Bitcoin Price`);
-
+        
         const data = await getItemPrice('physical_bitcoin_(btc)');
         
-        client.channels.cache.get("1212254689635074078").setName(`🪙 ${data.traderPrice}`);
+        if (globals.bitcoin_price !== data.traderPrice) {
+          console.log(`INFORMATION --- ${(new Date()).toUTCString()} --- Updating Bitcoin Price from '${globals.bitcoin_price}' to '${data.traderPrice}'`);
+          client.channels.cache.get("1212254689635074078").setName(`🪙 ${data.traderPrice}`);
+        }else {
+          console.log(`INFORMATION --- ${(new Date()).toUTCString()} --- Bitcoin price remains the same, no update required.`);
+        }
       });
 
-      // Update Tarkov Time; Every 9 Minutes
-      cron.schedule("*/9 * * * *", async () => {
+      // Update Tarkov Time; Every 2 Minutes
+      cron.schedule("*/2 * * * *", async () => {
         console.log(`INFORMATION --- ${(new Date()).toUTCString()} --- Updating Tarkov Time`);
         
         const now = new Date();
@@ -54,10 +62,14 @@ discord.once(Events.ClientReady, async (client) => {
       
       cron.schedule("0,30 * * * *", async ()=> {
         console.log(`INFORMATION --- ${(new Date()).toUTCString()} --- Updating Goons Location`);
-
+        
         const location = await getGoonLocation();
-
-        client.channels.cache.get("1212692015360385085").setName(`☠ Goons @ ${location}`);
+        if (globals.goon_location !== location) {
+          console.log(`INFORMATION --- ${(new Date()).toUTCString()} --- Updating Goons Location from '${globals.goon_location}' to '${location}'.`);
+          client.channels.cache.get("1212692015360385085").setName(`☠ Goons @ ${location}`);
+        } else {
+          console.log(`INFORMATION --- ${(new Date()).toUTCString()} --- Goons have not moved, no update required.`);
+        }
       })
 
 });
